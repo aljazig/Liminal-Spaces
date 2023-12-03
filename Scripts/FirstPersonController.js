@@ -9,7 +9,7 @@ export class FirstPersonController {
         yaw = 0,
         velocity = [0, 0, 0],
         acceleration = 50,
-        maxSpeed = 5,
+        maxSpeed = 100,
         decay = 0.99999,
         pointerSensitivity = 0.002,
     } = {}) {

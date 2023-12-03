@@ -16,6 +16,7 @@ import {
 
 import { Renderer } from './Renderer.js';
 import { Light } from './Light.js';
+import { quat, vec4 } from './gl-matrix-module.js';
 
 // define canvas
 const canvas = document.querySelector('canvas');
@@ -24,7 +25,7 @@ await renderer.initialize();
 
 const objloader = new OBJLoader();
 // get mesh from .obj
-const mesh = await objloader.loadMesh('../Models/Robik.obj');
+const mesh = await objloader.loadMesh('../Models/LabirintFR.obj');
 
 // define image for texture
 const imageBitmap = await fetch('../Textures/ground.jpg')
@@ -40,8 +41,13 @@ const material = new Material({
 });
 
 // define new model
+const cubeRotation = [0, 0, 0, 1]
+quat.fromEuler(cubeRotation, 90, 0, 0);
 const cubeModel = new Node();
-cubeModel.addComponent(new Transform({translation: [-1, 0, 0]}));
+cubeModel.addComponent(new Transform({
+    rotation: cubeRotation, 
+    translation: [-100, 12, 0]
+}));
 cubeModel.addComponent(new Model({
     primitives: [
         {material, mesh,},
@@ -50,7 +56,9 @@ cubeModel.addComponent(new Model({
 
 // define new camera
 const camera = new Node()
-camera.addComponent(new Transform({translation: [0, 10, 20]}));
+camera.addComponent(new Transform({
+    translation: [0, 10, 20]
+}));
 camera.addComponent(new Camera());
 camera.addComponent(new FirstPersonController(camera, document.body));
 
