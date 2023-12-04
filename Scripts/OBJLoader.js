@@ -6,65 +6,73 @@ export class OBJLoader {
         const response = await fetch(url);
         const text = await response.text();
 
-        const lines = text.split('\n');
+        const objects = text.split('o object');
+        const meshList = [];
 
-        const vRegex = /v\s+(\S+)\s+(\S+)\s+(\S+)\s*/;
-        const vData = lines
-            .filter(line => vRegex.test(line))
-            .map(line => [...line.match(vRegex)].slice(1))
-            .map(entry => entry.map(entry => Number(entry)));
+        let indLen = 0;
+        for (let o = 1; o < objects.length; o++) {
+            const lines = objects[o].split('\n');
 
-        const vnRegex = /vn\s+(\S+)\s+(\S+)\s+(\S+)\s*/;
-        const vnData = lines
-            .filter(line => vnRegex.test(line))
-            .map(line => [...line.match(vnRegex)].slice(1))
-            .map(entry => entry.map(entry => Number(entry)));
+            const vRegex = /v\s+(\S+)\s+(\S+)\s+(\S+)\s*/;
+            const vData = lines
+                .filter(line => vRegex.test(line))
+                .map(line => [...line.match(vRegex)].slice(1))
+                .map(entry => entry.map(entry => Number(entry)));
 
-        const vtRegex = /vt\s+(\S+)\s+(\S+)\s*/;
-        const vtData = lines
-            .filter(line => vtRegex.test(line))
-            .map(line => [...line.match(vtRegex)].slice(1))
-            .map(entry => entry.map(entry => Number(entry)));
+            const vnRegex = /vn\s+(\S+)\s+(\S+)\s+(\S+)\s*/;
+            const vnData = lines
+                .filter(line => vnRegex.test(line))
+                .map(line => [...line.match(vnRegex)].slice(1))
+                .map(entry => entry.map(entry => Number(entry)));
 
-        function triangulate(list) {
-            const triangles = [];
-            for (let i = 2; i < list.length; i++) {
-                triangles.push(list[0], list[i - 1], list[i]);
+            const vtRegex = /vt\s+(\S+)\s+(\S+)\s*/;
+            const vtData = lines
+                .filter(line => vtRegex.test(line))
+                .map(line => [...line.match(vtRegex)].slice(1))
+                .map(entry => entry.map(entry => Number(entry)));
+
+            function triangulate(list) {
+                const triangles = [];
+                for (let i = 2; i < list.length; i++) {
+                    triangles.push(list[0], list[i - 1], list[i]);
+                }
+                return triangles;
             }
-            return triangles;
-        }
 
-        const fRegex = /f\s+(.*)/;
-        const fData = lines
-            .filter(line => fRegex.test(line))
-            .map(line => line.match(fRegex)[1])
-            .map(line => line.trim().split(/\s+/))
-            .flatMap(face => triangulate(face));
+            const fRegex = /f\s+(.*)/;
+            const fData = lines
+                .filter(line => fRegex.test(line))
+                .map(line => line.match(fRegex)[1])
+                .map(line => line.trim().split(/\s+/))
+                .flatMap(face => triangulate(face));
 
-        const vertices = [];
-        const indices = [];
-        const cache = {};
-        let cacheLength = 0;
-        const indicesRegex = /(\d+)(\/(\d+))?(\/(\d+))?/;
+            const vertices = [];
+            const indices = [];
+            const cache = {};
+            let cacheLength = 0;
+            const indicesRegex = /(\d+)(\/(\d+))?(\/(\d+))?/;
 
-        for (const id of fData) {
-            if (id in cache) {
-                indices.push(cache[id]);
-            } else {
-                cache[id] = cacheLength;
-                indices.push(cacheLength);
-                const [,vIndex,,vtIndex,,vnIndex] = [...id.match(indicesRegex)]
-                    .map(entry => Number(entry) - 1);
-                vertices.push(new Vertex({
-                    position: vData[vIndex],
-                    normal: vnData[vnIndex],
-                    texcoords: vtData[vtIndex],
-                }));
-                cacheLength++;
+            for (const id of fData) {
+                if (id in cache) {
+                    indices.push(cache[id]);
+                } else {
+                    cache[id] = cacheLength;
+                    indices.push(cacheLength);
+                    const [,vIndex,,vtIndex,,vnIndex] = [...id.match(indicesRegex)]
+                        .map(entry => Number(entry) - 1 - indLen);
+                    vertices.push(new Vertex({
+                        position: vData[vIndex],
+                        normal: vnData[vnIndex],
+                        texcoords: vtData[vtIndex],
+                    }));
+                    cacheLength++;
+                }
             }
+            indLen += vData.length;
+            let m = new Mesh({ vertices, indices });
+            meshList.push(m);
         }
-
-        return new Mesh({ vertices, indices });
+        return meshList;
     }
 
 }

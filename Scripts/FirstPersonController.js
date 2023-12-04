@@ -9,7 +9,7 @@ export class FirstPersonController {
         yaw = 0,
         velocity = [0, 0, 0],
         acceleration = 50,
-        maxSpeed = 100,
+        maxSpeed = 5,
         decay = 0.99999,
         pointerSensitivity = 0.002,
     } = {}) {
@@ -57,6 +57,7 @@ export class FirstPersonController {
         const sin = Math.sin(this.yaw);
         const forward = [-sin, 0, -cos];
         const right = [cos, 0, -sin];
+        const up = [0, 0.001, 0];
 
         // Map user input to the acceleration vector.
         const acc = vec3.create();
@@ -72,6 +73,9 @@ export class FirstPersonController {
         if (this.keys['KeyA']) {
             vec3.sub(acc, acc, right);
         }
+        if (this.keys['KeyQ']) {
+            vec3.sub(acc, acc, up);
+        }
 
         // Update velocity based on acceleration.
         vec3.scaleAndAdd(this.velocity, this.velocity, acc, dt * this.acceleration);
@@ -80,7 +84,8 @@ export class FirstPersonController {
         if (!this.keys['KeyW'] &&
             !this.keys['KeyS'] &&
             !this.keys['KeyD'] &&
-            !this.keys['KeyA'])
+            !this.keys['KeyA'] &&
+            !this.keys['KeyQ'])
         {
             const decay = Math.exp(dt * Math.log(1 - this.decay));
             vec3.scale(this.velocity, this.velocity, decay);
