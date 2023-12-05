@@ -31,11 +31,11 @@ await renderer.initialize();
 
 const objloader = new OBJLoader();
 // get mesh from .obj
-const meshes = await objloader.loadMesh('Models/lastLAb.obj');
+const meshes = await objloader.loadMesh('Models/LabirintFR.obj');
 const labyrinth = new Node();
 
 // define image for texture
-const imageBitmap = await fetch('Textures/ground.jpg')
+const imageBitmap = await fetch('Textures/metal_texture.jpg')
 .then(response => response.blob())
 .then(blob => createImageBitmap(blob));
 
@@ -68,22 +68,27 @@ labyrinth.addComponent(new Transform({
 // define new camera
 const camera = new Node()
 camera.addComponent(new Transform({
-    translation: [-97, 11, -20],
+    //translation: [-60, 10.6, 53],
+    translation: [-39, 10.5, 59],
 }));
 camera.addComponent(new Camera());
-camera.addComponent(new FirstPersonController(camera, document.body));
+camera.addComponent(new FirstPersonController(camera, document.body, {
+    yaw: 4.5,
+}));
 camera.isDynamic = true;
 camera.aabb = {
-    min: [-1, -0.5, -1],
-    max: [1, 1, 1],
+    min: [-1, -1, -1],
+    max: [0.5, 0.5, 0.5],
 };
 
 // define new light
 const light = new Node();
 light.addComponent(new Transform({
-    translation: [0, 3, 0],
+    translation: [-39, 10.5, 59],
 }));
-light.addComponent(new Light());
+light.addComponent(new Light({
+    ambient: 10 ,
+}));
 
 // add all nodes to scene.
 const scene = new Node()
@@ -98,7 +103,6 @@ scene.traverse(node => {
         return;
     }
 
-    console.log(model)
     const boundingBoxes = model.primitives.map(primitive => calculateAxisAlignedBoundingBox(primitive.mesh));
     node.aabb = mergeAxisAlignedBoundingBoxes(boundingBoxes);
 });
