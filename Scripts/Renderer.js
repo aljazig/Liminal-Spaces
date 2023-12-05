@@ -81,6 +81,7 @@ export class Renderer extends BaseRenderer {
             size: [this.canvas.width, this.canvas.height],
             usage: GPUTextureUsage.RENDER_ATTACHMENT,
         });
+        console.log(this.depthTexture);
     }
 
     prepareNode(node) {
@@ -195,7 +196,7 @@ export class Renderer extends BaseRenderer {
                 view: this.depthTexture.createView(),
                 depthClearValue: 1,
                 depthLoadOp: 'clear',
-                depthStoreOp: 'discard',
+                depthStoreOp: 'store',
             },
         });
         this.renderPass.setPipeline(this.pipeline);
