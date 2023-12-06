@@ -1,6 +1,6 @@
 import { ResizeSystem } from './ResizeSystem.js';
 import { UpdateSystem } from './UpdateSystem.js';
-import { OBJLoader } from './OBJLoader.js';
+import { GLTFLoader } from './GLTFLoader.js';
 import { FirstPersonController } from './FirstPersonController.js';
 import { RotateAnimator } from './RotateAnimator.js';
 
@@ -29,72 +29,47 @@ const canvas = document.querySelector('canvas');
 const renderer = new Renderer(canvas);
 await renderer.initialize();
 
-const objloader = new OBJLoader();
-// get mesh from .obj
-const meshes = await objloader.loadMesh('Models/LabirintFR.obj');
-const labyrinth = new Node();
+const loader = new GLTFLoader();
+// Load gltf file:
+await loader.load('Models/test1.gltf');
 
-// define image for texture
+// Get scene:
+const scene = loader.loadScene(loader.defaultScene);
+
+// Get camera from scene:
+const camera = loader.loadNode('Camera');
+camera.addComponent(new Camera());
+camera.addComponent(new FirstPersonController(camera, document.body));
+camera.isDynamic = true;
+camera.aabb = {
+    min: [-0.2, -0.2, -0.2],
+    max: [0.2, 0.2, 0.2],
+};
+
+// define imageBitmap for texture
 const imageBitmap = await fetch('Textures/metal_texture.jpg')
 .then(response => response.blob())
 .then(blob => createImageBitmap(blob));
 
-// create new material for model
-const material = new Material({
-    baseTexture: new Texture({
-        image : imageBitmap,
-        sampler : new Sampler(),
-    })
+// Get objects in scene:
+const texture = new Texture({
+    image : imageBitmap,
+    sampler : new Sampler(),
+});
+scene.traverse(node => {
+    const obj = node.getComponentOfType(Model);
+    if (!obj) {
+        return;
+    }
+    obj.primitives[0].material.baseTexture = texture;
+    obj.isStatic = true;
 });
 
-for (let m = 0; m < meshes.length; m++) {
-    const mesh = meshes[m];
-
-    // define new model
-    const cubeModel = new Node();
-    cubeModel.addComponent(new Model({
-        primitives: [
-            {material, mesh,},
-        ]
-    }));
-    cubeModel.isStatic = true;
-    labyrinth.addChild(cubeModel);
-}
-labyrinth.addComponent(new Transform({
-    rotation: quat.fromEuler([0, 0, 0, 1], 90, 0, 0), 
-    translation: [0, 12, 0]
+// Get light in scene:
+const light1 = loader.loadNode('Light');
+light1.addComponent(new Light({
+    ambient: 10,
 }));
-
-// define new camera
-const camera = new Node()
-camera.addComponent(new Transform({
-    //translation: [-60, 10.6, 53],
-    translation: [-39, 10.5, 59],
-}));
-camera.addComponent(new Camera());
-camera.addComponent(new FirstPersonController(camera, document.body, {
-    yaw: 4.5,
-}));
-camera.isDynamic = true;
-camera.aabb = {
-    min: [-0.5, -0.5, -0.5],
-    max: [0.5, 0.5, 0.5],
-};
-
-// define new light
-const light = new Node();
-light.addComponent(new Transform({
-    translation: [-39, 10.5, 59],
-}));
-light.addComponent(new Light({
-    ambient: 10 ,
-}));
-
-// add all nodes to scene.
-const scene = new Node()
-scene.addChild(labyrinth);
-scene.addChild(camera);
-scene.addChild(light);
 
 const physics = new Physics(scene);
 scene.traverse(node => {
