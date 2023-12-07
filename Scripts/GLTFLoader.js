@@ -247,6 +247,7 @@ export class GLTFLoader {
 
         const bufferView = this.gltf.bufferViews[gltfSpec.bufferView];
         const buffer = this.loadBuffer(bufferView.buffer);
+        //console.log(buffer);
 
         const componentType = {
             5120: 'int',
@@ -385,7 +386,8 @@ export class GLTFLoader {
             primitives.push(new Primitive(options));
         }
 
-        const model = new Model({ primitives });
+        const name = gltfSpec.name;
+        const model = new Model({ primitives, name });
 
         this.cache.set(gltfSpec, model);
         return model;

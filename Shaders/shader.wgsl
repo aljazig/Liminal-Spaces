@@ -34,6 +34,7 @@ struct ModelUniforms {
 
 struct MaterialUniforms {
     baseFactor : vec4f,
+    //normalFactor : f32,
 }
 
 struct LightUniforms {
@@ -49,6 +50,8 @@ struct LightUniforms {
 @group(2) @binding(0) var<uniform> material : MaterialUniforms;
 @group(2) @binding(1) var baseTexture : texture_2d<f32>;
 @group(2) @binding(2) var baseSampler : sampler;
+//@group(2) @binding(3) var normalTexture : texture_2d<f32>;
+//@group(2) @binding(4) var normalSampler : sampler;
 
 @group(3) @binding(0) var<uniform> light : LightUniforms;
 

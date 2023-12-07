@@ -156,6 +156,24 @@ export class Renderer extends BaseRenderer {
 
         const baseTexture = this.prepareImage(material.baseTexture.image).gpuTexture;
         const baseSampler = this.prepareSampler(material.baseTexture.sampler).gpuSampler;
+        /*
+        const normalTexture = (() => {
+            if (material.normalTexture) {
+                let nt = this.prepareImage(material.normalTexture.image).gpuTexture;
+                return nt;
+            } else {
+                return baseTexture;
+            }
+        })();
+        const normalSampler = (() => {
+            if (material.normalTexture) {
+                let ns = this.prepareSampler(material.normalTexture.sampler).gpuSampler;
+                return ns;
+            } else {
+                return baseSampler;
+            }
+        })();
+        */
 
         const materialUniformBuffer = this.device.createBuffer({
             size: 16,
@@ -168,6 +186,8 @@ export class Renderer extends BaseRenderer {
                 { binding: 0, resource: { buffer: materialUniformBuffer } },
                 { binding: 1, resource: baseTexture.createView() },
                 { binding: 2, resource: baseSampler },
+                //{ binding: 3, resource: normalTexture.createView() },
+                //{ binding: 4, resource: normalSampler },
             ],
         });
 
@@ -219,7 +239,7 @@ export class Renderer extends BaseRenderer {
         this.device.queue.writeBuffer(lightUniformBuffer, 16, 
             new Float32Array([lightComponent.color]));
         this.device.queue.writeBuffer(lightUniformBuffer, 28, 
-            new Float32Array([lightComponent.ambient]))
+            new Float32Array([lightComponent.ambient]));
         this.renderPass.setBindGroup(3, lightBindGroup);
 
         this.renderNode(scene);
@@ -256,6 +276,7 @@ export class Renderer extends BaseRenderer {
     renderPrimitive(primitive) {
         const { materialUniformBuffer, materialBindGroup } = this.prepareMaterial(primitive.material);
         this.device.queue.writeBuffer(materialUniformBuffer, 0, new Float32Array(primitive.material.baseFactor));
+        //this.device.queue.writeBuffer(materialUniformBuffer, 16, new Float32Array([primitive.material.normalFactor]));
         this.renderPass.setBindGroup(2, materialBindGroup);
 
         const { vertexBuffer, indexBuffer } = this.prepareMesh(primitive.mesh, vertexBufferLayout);

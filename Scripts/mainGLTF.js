@@ -31,7 +31,7 @@ await renderer.initialize();
 
 const loader = new GLTFLoader();
 // Load gltf file:
-await loader.load('Models/Labirint/LAbirintMain.gltf');
+await loader.load('Models/lab/LAbirintMain.gltf');
 
 // Get scene:
 const scene = loader.loadScene(loader.defaultScene);
