@@ -81,7 +81,6 @@ export class Renderer extends BaseRenderer {
             size: [this.canvas.width, this.canvas.height],
             usage: GPUTextureUsage.RENDER_ATTACHMENT,
         });
-        console.log(this.depthTexture);
     }
 
     prepareNode(node) {

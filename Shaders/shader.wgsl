@@ -80,15 +80,16 @@ fn fragment(input : FragmentInput) -> FragmentOutput {
     let reflection = pow(max(dot(R, V), 0), 100);
     let ambient = light.ambient;
     let fog = pow(2, -(1) * length(V));
-    let distFall = 1 / pow(distance(light.position, input.position), 2) * 10;
+    let distFall = 1 / pow(distance(light.position, input.position), 2);
 
-    let materialColor = (textureSample(baseTexture, baseSampler, input.texcoords) * material.baseFactor).rgb;
+    let textureSampleColor = textureSample(baseTexture, baseSampler, input.texcoords);
+    let materialColor = (textureSampleColor * material.baseFactor).rgb;
     let materialColorWithFog = mix(materialColor, vec3f(0, 0, 0), fog);
     let lambertFactor = vec3(lambert);
     let ambientFactor = vec3(ambient);
     let reflectionFactor = vec3(reflection);
 
-    output.color = vec4((distFall * materialColorWithFog * (lambertFactor + ambientFactor) + reflectionFactor), 1);
+    output.color = vec4((distFall * materialColorWithFog * ((lambertFactor + ambientFactor) + reflectionFactor)), 1);
 
     return output;
 }

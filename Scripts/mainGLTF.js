@@ -31,45 +31,78 @@ await renderer.initialize();
 
 const loader = new GLTFLoader();
 // Load gltf file:
-await loader.load('Models/test1.gltf');
+await loader.load('Models/Labirint/LAbirintMain.gltf');
 
 // Get scene:
 const scene = loader.loadScene(loader.defaultScene);
 
 // Get camera from scene:
-const camera = loader.loadNode('Camera');
-camera.addComponent(new Camera());
+const camera = (() => {
+    if (!loader.loadNode('Camera')) {
+        const camera = new Node();
+        camera.addComponent(new Transform({
+            translation: [2, 3, 0],
+            rotation: quat.fromEuler([0, 0, 0, 1], 0, 30, 30),
+        }));
+        scene.addChild(camera);
+        return camera;
+    } else {
+        return loader.loadNode('Camera');
+    }
+})();
+camera.addComponent(new Camera({
+    near: 0.01,
+}));
 camera.addComponent(new FirstPersonController(camera, document.body));
 camera.isDynamic = true;
 camera.aabb = {
-    min: [-0.2, -0.2, -0.2],
-    max: [0.2, 0.2, 0.2],
+    min: [-0.5, -0.5, -0.2],
+    max: [0.5, 0.5, 0.2],
 };
 
 // define imageBitmap for texture
-const imageBitmap = await fetch('Textures/metal_texture.jpg')
+const imageBitmap = await fetch('Textures/grey.jpg')
 .then(response => response.blob())
 .then(blob => createImageBitmap(blob));
 
-// Get objects in scene:
+// Make base texture:
 const texture = new Texture({
     image : imageBitmap,
     sampler : new Sampler(),
 });
+
+// Make base material:
+const mat = new Material({
+    baseTexture : texture,
+})
+
+// Check every model for material and texture:
 scene.traverse(node => {
     const obj = node.getComponentOfType(Model);
     if (!obj) {
         return;
     }
-    obj.primitives[0].material.baseTexture = texture;
-    obj.isStatic = true;
+    if (!obj.primitives[0].material) {
+        obj.primitives[0].material = mat;
+    }
+    else if (!obj.primitives[0].material.baseTexture) {
+        obj.primitives[0].material.baseTexture = texture;
+    }
+    else if (!obj.primitives[0].material.baseTexture.sampler) {
+        obj.primitives[0].material.baseTexture.sampler = new Sampler();
+    }
+    node.isStatic = true;
 });
 
 // Get light in scene:
-const light1 = loader.loadNode('Light');
+const light1 = new Node();
+light1.addComponent(new Transform({
+    translation: camera.components[0].translation,
+}));
 light1.addComponent(new Light({
     ambient: 10,
 }));
+scene.addChild(light1);
 
 const physics = new Physics(scene);
 scene.traverse(node => {

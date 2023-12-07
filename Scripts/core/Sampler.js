@@ -1,11 +1,11 @@
 export class Sampler {
 
     constructor({
-        minFilter = 'linear',
+        minFilter = 'nearest',
         magFilter = 'linear',
         mipmapFilter = 'linear',
-        addressModeU = 'clamp-to-edge',
-        addressModeV = 'clamp-to-edge',
+        addressModeU = 'repeat',
+        addressModeV = 'repeat',
         addressModeW = 'clamp-to-edge',
         maxAnisotropy = 1,
     } = {}) {
