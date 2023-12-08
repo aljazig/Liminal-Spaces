@@ -247,7 +247,6 @@ export class GLTFLoader {
 
         const bufferView = this.gltf.bufferViews[gltfSpec.bufferView];
         const buffer = this.loadBuffer(bufferView.buffer);
-        //console.log(buffer);
 
         const componentType = {
             5120: 'int',
