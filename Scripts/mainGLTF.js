@@ -56,8 +56,8 @@ camera.addComponent(new Camera({
 camera.addComponent(new FirstPersonController(camera, document.body));
 camera.isDynamic = true;
 camera.aabb = {
-    min: [-0.5, -0.5, -0.2],
-    max: [0.5, 0.5, 0.2],
+    min: [-0.2, -0.2, -0.2],
+    max: [0.2, 0.2, 0.2],
 };
 
 // define imageBitmap for texture
@@ -74,6 +74,7 @@ const texture = new Texture({
 // Make base material:
 const mat = new Material({
     baseTexture : texture,
+    normalTexture: texture,
 })
 
 // Check every model for material and texture:
@@ -91,6 +92,14 @@ scene.traverse(node => {
     else if (!obj.primitives[0].material.baseTexture.sampler) {
         obj.primitives[0].material.baseTexture.sampler = new Sampler();
     }
+
+    if (!obj.primitives[0].material.normalTexture) {
+        obj.primitives[0].material.normalTexture = texture;
+    }
+    else if (!obj.primitives[0].material.normalTexture.sampler) {
+        obj.primitives[0].material.normalTexture.sampler = new Sampler();
+    }
+
     node.isStatic = true;
 });
 

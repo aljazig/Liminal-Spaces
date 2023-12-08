@@ -16,7 +16,7 @@ import { BaseRenderer } from './BaseRenderer.js';
 import { Light } from './Light.js';
 
 const vertexBufferLayout = {
-    arrayStride: 32,
+    arrayStride: 48,
     attributes: [
         {
             name: 'position',
@@ -34,6 +34,12 @@ const vertexBufferLayout = {
             name: 'normal',
             shaderLocation: 2,
             offset: 20,
+            format: 'float32x3',
+        },
+        {
+            name: 'tangent',
+            shaderLocation: 3,
+            offset: 32,
             format: 'float32x3',
         },
     ],
@@ -156,27 +162,11 @@ export class Renderer extends BaseRenderer {
 
         const baseTexture = this.prepareImage(material.baseTexture.image).gpuTexture;
         const baseSampler = this.prepareSampler(material.baseTexture.sampler).gpuSampler;
-        /*
-        const normalTexture = (() => {
-            if (material.normalTexture) {
-                let nt = this.prepareImage(material.normalTexture.image).gpuTexture;
-                return nt;
-            } else {
-                return baseTexture;
-            }
-        })();
-        const normalSampler = (() => {
-            if (material.normalTexture) {
-                let ns = this.prepareSampler(material.normalTexture.sampler).gpuSampler;
-                return ns;
-            } else {
-                return baseSampler;
-            }
-        })();
-        */
+        const normalTexture = this.prepareImage(material.normalTexture.image).gpuTexture;
+        const normalSampler = this.prepareSampler(material.normalTexture.sampler).gpuSampler;
 
         const materialUniformBuffer = this.device.createBuffer({
-            size: 16,
+            size: 32,
             usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
         });
 
@@ -186,8 +176,8 @@ export class Renderer extends BaseRenderer {
                 { binding: 0, resource: { buffer: materialUniformBuffer } },
                 { binding: 1, resource: baseTexture.createView() },
                 { binding: 2, resource: baseSampler },
-                //{ binding: 3, resource: normalTexture.createView() },
-                //{ binding: 4, resource: normalSampler },
+                { binding: 3, resource: normalTexture.createView() },
+                { binding: 4, resource: normalSampler },
             ],
         });
 
@@ -215,7 +205,7 @@ export class Renderer extends BaseRenderer {
                 view: this.depthTexture.createView(),
                 depthClearValue: 1,
                 depthLoadOp: 'clear',
-                depthStoreOp: 'store',
+                depthStoreOp: 'discard',
             },
         });
         this.renderPass.setPipeline(this.pipeline);
@@ -275,8 +265,10 @@ export class Renderer extends BaseRenderer {
 
     renderPrimitive(primitive) {
         const { materialUniformBuffer, materialBindGroup } = this.prepareMaterial(primitive.material);
-        this.device.queue.writeBuffer(materialUniformBuffer, 0, new Float32Array(primitive.material.baseFactor));
-        //this.device.queue.writeBuffer(materialUniformBuffer, 16, new Float32Array([primitive.material.normalFactor]));
+        this.device.queue.writeBuffer(materialUniformBuffer, 0, new Float32Array([
+            ...primitive.material.baseFactor,
+            primitive.material.normalFactor,
+        ]));
         this.renderPass.setBindGroup(2, materialBindGroup);
 
         const { vertexBuffer, indexBuffer } = this.prepareMesh(primitive.mesh, vertexBufferLayout);

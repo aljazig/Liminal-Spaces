@@ -2,6 +2,7 @@ struct VertexInput {
     @location(0) position : vec3f,
     @location(1) texcoords : vec2f,
     @location(2) normal : vec3f,
+    @location(3) tangent : vec3f,
 }
 
 struct VertexOutput {
@@ -9,12 +10,14 @@ struct VertexOutput {
     @location(0) position : vec3f,
     @location(1) texcoords : vec2f,
     @location(2) normal : vec3f,
+    @location(3) tangent : vec3f,
 }
 
 struct FragmentInput {
     @location(0) position : vec3f,
     @location(1) texcoords : vec2f,
     @location(2) normal : vec3f,
+    @location(3) tangent : vec3f,
 }
 
 struct FragmentOutput {
@@ -34,7 +37,7 @@ struct ModelUniforms {
 
 struct MaterialUniforms {
     baseFactor : vec4f,
-    //normalFactor : f32,
+    normalFactor : f32,
 }
 
 struct LightUniforms {
@@ -50,8 +53,8 @@ struct LightUniforms {
 @group(2) @binding(0) var<uniform> material : MaterialUniforms;
 @group(2) @binding(1) var baseTexture : texture_2d<f32>;
 @group(2) @binding(2) var baseSampler : sampler;
-//@group(2) @binding(3) var normalTexture : texture_2d<f32>;
-//@group(2) @binding(4) var normalSampler : sampler;
+@group(2) @binding(3) var normalTexture : texture_2d<f32>;
+@group(2) @binding(4) var normalSampler : sampler;
 
 @group(3) @binding(0) var<uniform> light : LightUniforms;
 
@@ -63,6 +66,7 @@ fn vertex(input : VertexInput) -> VertexOutput {
     output.position = (model.modelMatrix * vec4(input.position, 1)).xyz;
     output.texcoords = input.texcoords;
     output.normal = model.normalMatrix * input.normal;
+    output.tangent = model.normalMatrix * input.tangent;
 
     return output;
 }
@@ -71,11 +75,19 @@ fn vertex(input : VertexInput) -> VertexOutput {
 fn fragment(input : FragmentInput) -> FragmentOutput {
     var output : FragmentOutput;
 
-    let L = normalize(light.position - input.position);
-    let N = normalize(input.normal);
+    let baseColor = textureSample(baseTexture, baseSampler, input.texcoords);
+    let normalColor = textureSample(normalTexture, normalSampler, input.texcoords);
+    let scaledNormal = normalize((normalColor.xyz * 2 - 1) * vec3(vec2(material.normalFactor), 1));
 
-    //let Lvzp = (dot(L, N) / dot(N, N)) * N
-    //let Lprav = L - Lvzp
+    let normal = normalize(input.normal);
+    let tangent = normalize(input.tangent);
+    let bitangent = normalize(cross(tangent, normal));
+    
+    let tangentMat = mat3x3(tangent, bitangent, normal);
+    let transformedN = tangent * scaledNormal;
+
+    let L = normalize(light.position - input.position);
+    let N = transformedN;
     let R = -reflect(L, N);
     let V = normalize(camera.position - input.position);
 
@@ -84,15 +96,16 @@ fn fragment(input : FragmentInput) -> FragmentOutput {
     let ambient = light.ambient;
     let fog = pow(2, -(1) * length(V));
     let distFall = 1 / pow(distance(light.position, input.position), 2);
+    let closeFall = pow(distance(light.position, input.position), 2) * 0.05  + 0.1;
+    let fall = min(distFall, closeFall);
 
-    let textureSampleColor = textureSample(baseTexture, baseSampler, input.texcoords);
-    let materialColor = (textureSampleColor * material.baseFactor).rgb;
+    let materialColor = (baseColor * material.baseFactor).rgb;
     let materialColorWithFog = mix(materialColor, vec3f(0, 0, 0), fog);
     let lambertFactor = vec3(lambert);
     let ambientFactor = vec3(ambient);
     let reflectionFactor = vec3(reflection);
 
-    output.color = vec4((distFall * materialColorWithFog * ((lambertFactor + ambientFactor) + reflectionFactor)), 1);
+    output.color = vec4((fall * materialColorWithFog * ((lambertFactor + ambientFactor) + reflectionFactor)), 1);
 
     return output;
 }
