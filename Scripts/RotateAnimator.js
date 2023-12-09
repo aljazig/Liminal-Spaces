@@ -41,7 +41,6 @@ export class RotateAnimator {
         const clampedInterpolation = Math.min(Math.max(linearInterpolation, 0), 1);
         const loopedInterpolation = ((linearInterpolation % 1) + 1) % 1;
 
-        // Dynamically update end rotation for continuous spinning
         let angle = 360 * loopedInterpolation;
         this.endRotation = quat.fromEuler(quat.create(), 0, angle, 0);
 
@@ -53,12 +52,10 @@ export class RotateAnimator {
     updateNode(interpolation) {
         const transform = this.node.getComponentOfType(Transform);
         if (!transform) {
-            console.error('Transform component not found in the node');
             return;
         }
 
         quat.fromEuler(transform.rotation, 0, this.currentAngle, 0);
-        console.log(`Rotation: ${transform.rotation}`);
     }
 
 }

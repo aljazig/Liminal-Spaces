@@ -119,7 +119,7 @@ export class Physics {
         }
 
         const trigger = b.getComponentOfType(Trigger);
-        trigger.executeFunction(a);
+        trigger.executeFunction(a, b);
     }
 
 }

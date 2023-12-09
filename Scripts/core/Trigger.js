@@ -15,7 +15,13 @@ export class Trigger{
         this.scale = scale;
     }
 
-    executeFunction(player){
+    donutFunction(player, donut) {
+        const controller = player.getComponentOfType(FirstPersonController);
+        controller.maxSpeed *= 1.1;
+        donut.parent.removeChild(donut);
+    }
+
+    executeFunction(player, object){
         const triggerFun = this.functionality.split(", ");
         for (let fun in triggerFun) {
             if (triggerFun[fun] == "move") {
@@ -46,6 +52,9 @@ export class Trigger{
                     return;
                 }
                 vec3.add(transform.scale, transform.scale, this.scale);
+            }
+            if (triggerFun[fun] == "donut") {
+                this.donutFunction(player, object);
             }
         }
     }

@@ -61,7 +61,7 @@ camera.addComponent(new FirstPersonController(camera, document.body, {
 }));
 camera.isDynamic = true;
 camera.aabb = {
-    min: [-0.2, -1.3, -0.2],
+    min: [-0.2, -0.2, -0.2],
     max: [0.2, 0.2, 0.2],
 };
 
@@ -89,17 +89,23 @@ const donut = (() => {
     return donut;
 })();
 donut.addComponent(new Transform({
-    //rotation: quat.fromEuler([0, 0, 0, 1], 40, 0, 0),
     translation: [3, 2, -2],
     scale: [4, 4, 4],
 }));
-
 donut.addComponent(new RotateAnimator(donut, {
     startRotation: quat.fromEuler(quat.create(), 0, 0, 0),
     endRotation: quat.fromEuler(quat.create(), 0, 360, 0),
     startTime: 0,
     duration: 5,
-    loop: true,
+    loop: true, 
+}));
+donut.aabb = {
+    min: [-0.05, -0.1, -0.05],
+    max: [0.05, 2, 0.05],
+};
+donut.isTrigger = true;
+donut.addComponent(new Trigger({
+    functionality: "donut",
 }));
 scene.addChild(donut);
 
