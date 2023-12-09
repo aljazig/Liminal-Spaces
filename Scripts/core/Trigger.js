@@ -36,10 +36,8 @@ export class Trigger{
                 const controller = player.getComponentOfType(FirstPersonController);
                 const yawRot = (((this.rotation[0] + controller.yaw) % twopi) + twopi) % twopi;
 
-                console.log(yawRot);
                 controller.yaw = yawRot;
                 const m = mat3.fromRotation(mat3.create(), yawRot);
-                console.log(m);
                 controller.velocity = vec3.transformMat3(controller.velocity, controller.velocity, m);
             }
             if (triggerFun[fun] == "scale") {
