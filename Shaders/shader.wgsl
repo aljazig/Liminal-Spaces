@@ -76,18 +76,17 @@ fn fragment(input : FragmentInput) -> FragmentOutput {
     var output : FragmentOutput;
 
     let baseColor = textureSample(baseTexture, baseSampler, input.texcoords);
-    let normalColor = textureSample(normalTexture, normalSampler, input.texcoords);
-    let scaledNormal = normalize((normalColor.xyz * 2 - 1) * vec3(vec2(material.normalFactor), 1));
+    let normalColor = textureSample(normalTexture, normalSampler, input.texcoords).rgb;
+    let scaledNormal = normalize(normalColor * 2 - 1);// * vec3(vec2(material.normalFactor), 1));
 
     let normal = normalize(input.normal);
     let tangent = normalize(input.tangent);
-    let bitangent = normalize(cross(tangent, normal));
+    let bitangent = normalize(cross(normal, tangent));
+    let TBN = mat3x3(tangent, bitangent, normal);
     
-    let tangentMat = mat3x3(tangent, bitangent, normal);
-    let transformedN = tangent * scaledNormal;
+    let N = TBN * scaledNormal;
 
     let L = normalize(light.position - input.position);
-    let N = transformedN;
     let R = -reflect(L, N);
     let V = normalize(camera.position - input.position);
 

@@ -1,6 +1,6 @@
 import { vec3, mat4 } from './gl-matrix-module.js';
 import { getGlobalModelMatrix } from './core/SceneUtils.js';
-import { Transform } from './core.js';
+import { Transform, Trigger } from './core.js';
 
 export class Physics {
 
@@ -14,6 +14,9 @@ export class Physics {
                 this.scene.traverse(other => {
                     if (node !== other && other.isStatic) {
                         this.resolveCollision(node, other);
+                    }
+                    if (node !== other && other.isTrigger) {
+                        this.resolveTrigger(node, other);
                     }
                 });
             }
@@ -102,6 +105,21 @@ export class Physics {
         }
 
         vec3.add(transform.translation, transform.translation, minDirection);
+    }
+
+    resolveTrigger(a, b) {
+        // Get global space AABBs.
+        const aBox = this.getTransformedAABB(a);
+        const bBox = this.getTransformedAABB(b);
+
+        // Check if there is collision.
+        const isColliding = this.aabbIntersection(aBox, bBox);
+        if (!isColliding) {
+            return;
+        }
+
+        const trigger = b.getComponentOfType(Trigger);
+        trigger.executeFunction(a);
     }
 
 }

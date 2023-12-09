@@ -2,7 +2,7 @@ import { vec3, mat3, mat4 } from './gl-matrix-module.js';
 
 import * as WebGPU from './WebGPU.js';
 
-import { Camera } from './core.js';
+import { Camera, Sampler } from './core.js';
 
 import {
     getLocalModelMatrix,
@@ -162,7 +162,8 @@ export class Renderer extends BaseRenderer {
 
         const baseTexture = this.prepareImage(material.baseTexture.image).gpuTexture;
         const baseSampler = this.prepareSampler(material.baseTexture.sampler).gpuSampler;
-        const normalTexture = this.prepareImage(material.normalTexture.image).gpuTexture;
+        
+        const normalTexture = this.prepareImage(material.normalTexture.image).gpuTexture;            
         const normalSampler = this.prepareSampler(material.normalTexture.sampler).gpuSampler;
 
         const materialUniformBuffer = this.device.createBuffer({

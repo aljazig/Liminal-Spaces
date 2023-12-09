@@ -57,7 +57,6 @@ export class FirstPersonController {
         const sin = Math.sin(this.yaw);
         const forward = [-sin, 0, -cos];
         const right = [cos, 0, -sin];
-        const up = [0, 0.001, 0];
 
         // Map user input to the acceleration vector.
         const acc = vec3.create();
@@ -73,8 +72,9 @@ export class FirstPersonController {
         if (this.keys['KeyA']) {
             vec3.sub(acc, acc, right);
         }
-        if (this.keys['KeyQ']) {
-            vec3.sub(acc, acc, up);
+        if (this.keys['ShiftLeft']) {
+            this.maxSpeed = 10;
+            this.acceleration = 100;
         }
 
         // Update velocity based on acceleration.
@@ -84,11 +84,14 @@ export class FirstPersonController {
         if (!this.keys['KeyW'] &&
             !this.keys['KeyS'] &&
             !this.keys['KeyD'] &&
-            !this.keys['KeyA'] &&
-            !this.keys['KeyQ'])
+            !this.keys['KeyA'] )
         {
             const decay = Math.exp(dt * Math.log(1 - this.decay));
             vec3.scale(this.velocity, this.velocity, decay);
+        }
+        if (!this.keys['ShiftLeft']) {
+            this.maxSpeed = 5;
+            this.acceleration = 50;
         }
 
         // Limit speed to prevent accelerating to infinity and beyond.
@@ -99,6 +102,7 @@ export class FirstPersonController {
 
         const transform = this.node.getComponentOfType(Transform);
         if (transform) {
+            console.log(transform.translation);
             // Update translation based on velocity.
             vec3.scaleAndAdd(transform.translation,
                 transform.translation, this.velocity, dt);

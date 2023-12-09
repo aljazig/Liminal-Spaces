@@ -1,6 +1,7 @@
 import { ResizeSystem } from './ResizeSystem.js';
 import { UpdateSystem } from './UpdateSystem.js';
 import { GLTFLoader } from './GLTFLoader.js';
+import { OBJLoader } from './OBJLoader.js';
 import { FirstPersonController } from './FirstPersonController.js';
 import { RotateAnimator } from './RotateAnimator.js';
 
@@ -12,6 +13,7 @@ import {
     Material,
     Texture,
     Sampler,
+    Trigger,
 } from './core.js';
 
 import {
@@ -41,7 +43,7 @@ const camera = (() => {
     if (!loader.loadNode('Camera')) {
         const camera = new Node();
         camera.addComponent(new Transform({
-            translation: [2, 3, 0],
+            translation: [3, 3, 0],
             rotation: quat.fromEuler([0, 0, 0, 1], 0, 30, 30),
         }));
         scene.addChild(camera);
@@ -53,12 +55,44 @@ const camera = (() => {
 camera.addComponent(new Camera({
     near: 0.01,
 }));
-camera.addComponent(new FirstPersonController(camera, document.body));
+camera.addComponent(new FirstPersonController(camera, document.body, {
+    maxSpeed: 20,
+}));
 camera.isDynamic = true;
 camera.aabb = {
     min: [-0.2, -0.2, -0.2],
     max: [0.2, 0.2, 0.2],
 };
+
+// Make a room:
+await loader.load("Models/soba/soba.gltf");
+const soba = loader.loadScene(loader.defaultScene);
+soba.addComponent(new Transform({
+    translation: [60, 1.42, -52],
+    rotation: quat.fromEuler([0, 0, 0, 1], 0, -90, 0),
+}))
+scene.addChild(soba);
+
+// Make a donut:
+await loader.load("Models/donut/donut.gltf");
+const donutScene = loader.loadScene(loader.defaultScene);
+const donut = (() => {
+    let donut = new Node();
+    donut.addChild(loader.loadNode("donut"));
+    donut.addChild(loader.loadNode("icing"));
+    donut.addChild(loader.loadNode("sprinkle"));
+    donut.addChild(loader.loadNode("sprinkle.001"));
+    donut.addChild(loader.loadNode("sprinkle.002"));
+    donut.addChild(loader.loadNode("sprinkle.003"));
+    donut.addChild(loader.loadNode("sprinkle.004"));
+    return donut;
+})();
+donut.addComponent(new Transform({
+    //rotation: quat.fromEuler([0, 0, 0, 1], 40, 0, 0),
+    translation: [3, 2, -5],
+    scale: [4, 4, 4],
+}));
+scene.addChild(donut);
 
 // define imageBitmap for texture
 const imageBitmap = await fetch('Textures/grey.jpg')
@@ -113,6 +147,23 @@ light1.addComponent(new Light({
 }));
 scene.addChild(light1);
 
+// Create trigger:
+const trigger = new Node();
+trigger.addComponent(new Transform({
+    translation: [3, 3, 5.3],
+}));
+trigger.addComponent(new Trigger({
+    functionality: "move",
+    translation: [0, 0, -0.65],
+}));
+trigger.aabb = {
+    min: [-2, -1, -0.01],
+    max: [2, 1, 0.01],
+};
+trigger.isTrigger = true;
+scene.addChild(trigger);
+
+// Enable physics (add a bounding box on every object):
 const physics = new Physics(scene);
 scene.traverse(node => {
     const model = node.getComponentOfType(Model);
