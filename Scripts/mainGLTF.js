@@ -94,17 +94,13 @@ donut.addComponent(new Transform({
     scale: [4, 4, 4],
 }));
 
-/*
-const endPoint1 = quat.create();
-quat.add(endPoint1, quat.fromEuler([0, 0, 0, 1], 0, 180, 0), [0, 0, 0, 1])
-//console.log(endPoint1);
 donut.addComponent(new RotateAnimator(donut, {
-    startRotation: [0, 0, 0, 1],
-    endRotation: endPoint1,
+    startRotation: quat.fromEuler(quat.create(), 0, 0, 0),
+    endRotation: quat.fromEuler(quat.create(), 0, 360, 0),
+    startTime: 0,
     duration: 5,
     loop: true,
 }));
-*/
 scene.addChild(donut);
 
 // define imageBitmap for texture
