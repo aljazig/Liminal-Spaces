@@ -102,6 +102,23 @@ donut.addComponent(new Trigger({
 }));
 scene.addChild(donut);
 
+// Make a monster:
+await loader.load("Models/posastGLTF/Posast1.gltf");
+const monsterScene = loader.loadScene(loader.defaultScene);
+const monster = (() => {
+    let monster = new Node();
+    monster.addChild(loader.loadNode("blago"));
+    monster.addChild(loader.loadNode("eye"));
+    monster.addChild(loader.loadNode("eye.002"));
+    monster.addChild(loader.loadNode("glava"));
+    return monster;
+})();
+monster.addComponent(new Transform({
+    translation: [3, 3, 5],
+    scale: [0.2, 0.2, 0.2],
+}));
+scene.addChild(monster);
+
 // define imageBitmap for texture
 const imageBitmap = await fetch('Textures/grey.jpg')
 .then(response => response.blob())

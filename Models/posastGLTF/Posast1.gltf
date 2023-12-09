@@ -154,11 +154,7 @@
                     "index" : 1,
                     "texCoord" : 0
                 },
-                "metallicFactor" : 0.4678899049758911,
-                "metallicRoughnessTexture" : {
-                    "index" : 2,
-                    "texCoord" : 0
-                }
+                "metallicFactor" : 0.4678899049758911
             }
         },
         {
@@ -171,7 +167,7 @@
             "name" : "oko",
             "pbrMetallicRoughness" : {
                 "baseColorTexture" : {
-                    "index" : 3,
+                    "index" : 2,
                     "texCoord" : 0
                 },
                 "metallicFactor" : 0,
@@ -186,11 +182,16 @@
                 1
             ],
             "emissiveTexture" : {
-                "index" : 4,
+                "index" : 3,
                 "texCoord" : 0
             },
             "name" : "Material.007",
-            "pbrMetallicRoughness" : {}
+            "pbrMetallicRoughness" : {
+                "baseColorTexture" : {
+                    "index" : 3,
+                    "texCoord" : 0
+                }
+            }
         }
     ],
     "meshes" : [
@@ -296,9 +297,6 @@
         },
         {
             "source" : 3
-        },
-        {
-            "source" : 4
         }
     ],
     "images" : [
@@ -311,11 +309,6 @@
             "mimeType" : "image/jpeg",
             "name" : "Fabric_Quilt_004_basecolor",
             "uri" : "Fabric_Quilt_004_basecolor.jpg"
-        },
-        {
-            "mimeType" : "image/png",
-            "name" : "Fabric_Quilt_004_roughness.jpg",
-            "uri" : "Fabric_Quilt_004_roughness_jpg.png"
         },
         {
             "mimeType" : "image/jpeg",
@@ -725,7 +718,7 @@
     "buffers" : [
         {
             "byteLength" : 513584,
-            "uri" : "Po\u0161ast1.bin"
+            "uri" : "Posast1.bin"
         }
     ]
 }
