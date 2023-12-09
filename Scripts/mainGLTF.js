@@ -43,6 +43,7 @@ const camera = (() => {
     if (!loader.loadNode('Camera')) {
         const camera = new Node();
         camera.addComponent(new Transform({
+            //translation: [-8, 3, 32],
             translation: [3, 3, 0],
             rotation: quat.fromEuler([0, 0, 0, 1], 0, 30, 30),
         }));
@@ -60,7 +61,7 @@ camera.addComponent(new FirstPersonController(camera, document.body, {
 }));
 camera.isDynamic = true;
 camera.aabb = {
-    min: [-0.2, -0.2, -0.2],
+    min: [-0.2, -1.3, -0.2],
     max: [0.2, 0.2, 0.2],
 };
 
@@ -89,9 +90,21 @@ const donut = (() => {
 })();
 donut.addComponent(new Transform({
     //rotation: quat.fromEuler([0, 0, 0, 1], 40, 0, 0),
-    translation: [3, 2, -5],
+    translation: [3, 2, -2],
     scale: [4, 4, 4],
 }));
+
+/*
+const endPoint1 = quat.create();
+quat.add(endPoint1, quat.fromEuler([0, 0, 0, 1], 0, 180, 0), [0, 0, 0, 1])
+//console.log(endPoint1);
+donut.addComponent(new RotateAnimator(donut, {
+    startRotation: [0, 0, 0, 1],
+    endRotation: endPoint1,
+    duration: 5,
+    loop: true,
+}));
+*/
 scene.addChild(donut);
 
 // define imageBitmap for texture
@@ -147,21 +160,37 @@ light1.addComponent(new Light({
 }));
 scene.addChild(light1);
 
-// Create trigger:
-const trigger = new Node();
-trigger.addComponent(new Transform({
+// Create trigger colliders:
+const trigger1 = new Node();
+trigger1.addComponent(new Transform({
     translation: [3, 3, 5.3],
 }));
-trigger.addComponent(new Trigger({
+trigger1.addComponent(new Trigger({
     functionality: "move",
     translation: [0, 0, -0.65],
 }));
-trigger.aabb = {
+trigger1.aabb = {
+    min: [-1, -1, -0.01],
+    max: [2, 1, 0.01],
+};
+trigger1.isTrigger = true;
+scene.addChild(trigger1);
+
+const trigger2 = new Node();
+trigger2.addComponent(new Transform({
+    translation: [-8, 3, 34],
+}));
+trigger2.addComponent(new Trigger({
+    functionality: "move, rotate",
+    translation: [-4, 0, -6],
+    rotation: [90 * (Math.PI / 180), 0],
+}));
+trigger2.aabb = {
     min: [-2, -1, -0.01],
     max: [2, 1, 0.01],
 };
-trigger.isTrigger = true;
-scene.addChild(trigger);
+trigger2.isTrigger = true;
+scene.addChild(trigger2);
 
 // Enable physics (add a bounding box on every object):
 const physics = new Physics(scene);

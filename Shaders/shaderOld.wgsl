@@ -94,37 +94,9 @@ fn fragment(input : FragmentInput) -> FragmentOutput {
     let reflection = pow(max(dot(R, V), 0), 100);
     let ambient = light.ambient;
     let fog = pow(2, -(1) * length(V));
-
-    // var distanceTreshold: f32 = 3;
-    // let distFall = (1 / pow(distance(light.position, input.position), 2));
-    // let defaultFall = 1 / pow(distanceTreshold, 2);
-    // var fall: f32 = 0;
-    // if(distance(light.position, input.position) < (distanceTreshold)){
-    //     fall = defaultFall;
-    // }
-    // else if(distance(light.position, input.position) > (distanceTreshold) && distance(light.position, input.position) < (distanceTreshold + 1)){
-    //     let midDist = distanceTreshold + 1 - distance(light.position, input.position);
-    //     fall = (((1-midDist)*distFall) + (midDist*defaultFall));
-    // }
-    // else{
-    //     fall = distFall;
-    // }
-
-    var distanceTreshold: f32 = 4;
     let distFall = 1 / pow(distance(light.position, input.position), 2);
-    let closeFall = (3/4) - (1/4)*distance(light.position, input.position);
-    let defaultFall = 1 / pow(distanceTreshold, 2);
-    var fall: f32 = 0;
-    if(distance(light.position, input.position) < (distanceTreshold)){
-        fall = defaultFall + (distanceTreshold-distance(light.position, input.position))*1/32;
-    }
-    else{
-        fall = distFall;
-    }
-
-    // let distFall = 1 / pow(distance(light.position, input.position), 2);
-    // let closeFall = pow(distance(light.position, input.position), 2) * 0.05  + 0.1;
-    // let fall = min(distFall, closeFall);
+    let closeFall = pow(distance(light.position, input.position), 2) * 0.05  + 0.1;
+    let fall = min(distFall, closeFall);
 
     let materialColor = (baseColor * material.baseFactor).rgb;
     let materialColorWithFog = mix(materialColor, vec3f(0, 0, 0), fog);
