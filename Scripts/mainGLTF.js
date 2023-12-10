@@ -298,7 +298,14 @@ scene.addChild(monsterTrigger);
 const exitTrigger = new Node();
 exitTrigger.addComponent(new Transform({
     translation: [-21, 3, 2.5],
-}))
+}));
+exitTrigger.addComponent(new Trigger({
+    functionality: "exit",
+}));
+exitTrigger.aabb = {
+    min: [-1, -1, -1],
+    max: [1, 1, 1],
+};
 
 // Enable physics (add a bounding box on every object):
 const physics = new Physics(scene);

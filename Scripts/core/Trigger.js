@@ -34,6 +34,10 @@ export class Trigger{
         window.location = "./index.html/#dead";
     }
 
+    executeFunction() {
+        window.location = "./index.html/#win";
+    }
+
     executeFunction(player, object){
         const triggerFun = this.functionality.split(", ");
         for (let fun in triggerFun) {
@@ -75,6 +79,9 @@ export class Trigger{
             }
             if (triggerFun[fun] == "monsterKill") {
                 this.monsterKillFunction();
+            }
+            if (triggerFun[fun] == "exit") {
+                this.exitFunction();
             }
         }
     }
