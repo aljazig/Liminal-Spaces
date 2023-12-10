@@ -44,9 +44,7 @@ const camera = (() => {
     if (!loader.loadNode('Camera')) {
         const camera = new Node();
         camera.addComponent(new Transform({
-            //translation: [-8, 3, 32],
-            //translation: [3, 3, 0],
-            translation: [-17, 3, 2.5],
+            translation: [3, 3, 0],
             rotation: quat.fromEuler([0, 0, 0, 1], 0, 30, 30),
         }));
         scene.addChild(camera);

@@ -94,7 +94,7 @@ fn fragment(input : FragmentInput) -> FragmentOutput {
     let V = normalize(camera.position - input.position);
 
     let lambert = max(dot(N, L), 0);
-    let reflection = pow(max(dot(R, V), 0), 100);
+    let reflection = pow(max(dot(R, V), 0), 6);
     let ambient = light.ambient;
     let fog = pow(2, -(1) * length(V));
 
