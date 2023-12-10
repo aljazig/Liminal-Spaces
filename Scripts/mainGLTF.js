@@ -123,13 +123,13 @@ async function createDonut() {
 }
 const donut = await createDonut();
 donut.addComponent(new Transform({
-    translation: [3, 2, -2],
+    translation: [3, 2, -5],
     scale: [4, 4, 4],
 }));
 scene.addChild(donut);
 const donut2 = await createDonut();
 donut2.addComponent(new Transform({
-    translation: [3, 2, -10],
+    translation: [8.5, 2, 8.5],
     scale: [4, 4, 4],
 }));
 scene.addChild(donut2);
@@ -163,7 +163,18 @@ donut7.addComponent(new Transform({
     scale: [4, 4, 4],
 }));
 scene.addChild(donut7);
-
+const donut8 = await createDonut();
+donut8.addComponent(new Transform({
+    translation: [38, 2, -5.5],
+    scale: [4, 4, 4],
+}));
+scene.addChild(donut8);
+const donut9 = await createDonut();
+donut9.addComponent(new Transform({
+    translation: [-13, 2, 12],
+    scale: [4, 4, 4],
+}));
+scene.addChild(donut9);
 // Make a monster:
 await loader.load("Models/posastGLTF/Posast1.gltf");
 const monster = (() => {
@@ -194,6 +205,36 @@ monster.aabb = {
     max: [3, 1, 1],
 }
 scene.addChild(monster);
+
+await loader.load("Models/posastGLTF/Posast1.gltf");
+const monster2 = (() => {
+    let monster2 = new Node();
+    monster2.addChild(loader.loadNode("blago"));
+    monster2.addChild(loader.loadNode("eye"));
+    monster2.addChild(loader.loadNode("eye.002"));
+    monster2.addChild(loader.loadNode("glava"));
+    return monster2;
+})();
+monster2.addComponent(new Transform({
+    rotation: quat.fromEuler([0, 0, 0, 1], 0, 0, 0),
+    translation: [-8, 3, -39],
+    scale: [0.2, 0.2, 0.2],
+}));
+monster2.addComponent(new LinearAnimator(monster2, {
+    startPosition: monster2.getComponentOfType(Transform).translation,
+    endPosition: camera.getComponentOfType(Transform).translation,
+    duration: 1000,
+}));
+monster2.getComponentOfType(LinearAnimator).pause();
+monster2.addComponent(new Trigger({
+    functionality: "monsterKill",
+}));
+monster2.isTrigger = true;
+monster2.aabb = {
+    min: [-3, -1, -1],
+    max: [3, 1, 1],
+}
+scene.addChild(monster2);
 
 // define imageBitmap for texture
 const imageBitmap = await fetch('Textures/grey.jpg')
@@ -295,6 +336,21 @@ monsterTrigger.aabb = {
 monsterTrigger.isTrigger = true;
 scene.addChild(monsterTrigger);
 
+const monsterTrigger2 = new Node();
+monsterTrigger2.addComponent(new Transform({
+    translation: [-3, 3, -36],
+}));
+monsterTrigger2.addComponent(new Trigger({
+    functionality: "monsterAttack",
+    monster: monster2,
+}));
+monsterTrigger2.aabb = {
+    min: [-0.5, -1, -0.01],
+    max: [0.5, 1, 0.01],
+};
+monsterTrigger2.isTrigger = true;
+scene.addChild(monsterTrigger2);
+
 const exitTrigger = new Node();
 exitTrigger.addComponent(new Transform({
     translation: [-19, 3, 2.5],
@@ -332,6 +388,7 @@ function update(time, dt) {
     let my = monster.getComponentOfType(Transform).translation[2];
     let cx = camera.getComponentOfType(Transform).translation[0];
     let cy = camera.getComponentOfType(Transform).translation[2];
+
 
     let angleToTurn = -Math.atan2((cy - my), (cx - mx));
     monster.getComponentOfType(Transform).rotation = quat.fromEuler(monster.getComponentOfType(Transform).rotation, 0, (180 / Math.PI) * angleToTurn, 0);
