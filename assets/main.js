@@ -1320,105 +1320,6 @@
 		
 			}
 	
-	// Reorder.
-		(function() {
-		
-			var breakpoints = {
-					small: '(max-width: 736px)',
-					medium: '(max-width: 980px)',
-				},
-				elements = $$('[data-reorder]');
-		
-			// Initialize elements.
-				elements.forEach(function(e) {
-		
-					var desktop = [],
-						mobile = [],
-						state = false,
-						query,
-						a, x, ce, f;
-		
-					// Determine media query via "reorder-breakpoint".
-		
-						// Attribute provided *and* it's a valid breakpoint? Use it.
-							if ('reorderBreakpoint' in e.dataset
-							&&  e.dataset.reorderBreakpoint in breakpoints)
-								query = breakpoints[e.dataset.reorderBreakpoint];
-		
-						// Otherwise, default to "small".
-							else
-								query = breakpoints.small;
-		
-					// Get desktop order.
-						for (ce of e.childNodes) {
-		
-							// Not a node? Skip.
-								if (ce.nodeType != 1)
-									continue;
-		
-							// Add to desktop order.
-								desktop.push(ce);
-		
-						}
-		
-					// Determine mobile order via "reorder".
-						a = e.dataset.reorder.split(',');
-		
-						for (x of a)
-							mobile.push(desktop[parseInt(x)]);
-		
-					// Create handler.
-						f = function() {
-		
-							var order = null,
-								ce;
-		
-							// Matches media query?
-								if (window.matchMedia(query).matches) {
-		
-									// Hasn't been applied yet?
-										if (!state) {
-		
-											// Mark as applied.
-												state = true;
-		
-											// Apply mobile.
-												for (ce of mobile)
-													e.appendChild(ce);
-		
-										}
-		
-								}
-		
-							// Otherwise ...
-								else {
-		
-									// Previously applied?
-										if (state) {
-		
-											// Unmark as applied.
-												state = false;
-		
-											// Apply desktop.
-												for (ce of desktop)
-													e.appendChild(ce);
-		
-										}
-		
-								}
-		
-						};
-		
-					// Add event listeners.
-						on('resize', f);
-						on('orientationchange', f);
-						on('load', f);
-						on('fullscreenchange', f);
-		
-				});
-		
-		})();
-	
 	// Scroll events.
 		var scrollEvents = {
 		
@@ -2297,13 +2198,8 @@
 		};
 	
 	// Initialize "On Visible" animations.
-		onvisible.add('h1.style3, h2.style3, h3.style3, p.style3', { style: 'fade-right', speed: 1000, intensity: 0, threshold: 3, delay: 0, replay: false });
-		onvisible.add('h1.style1, h2.style1, h3.style1, p.style1', { style: 'fade-left', speed: 1000, intensity: 0, threshold: 3, delay: 0, replay: false });
-		onvisible.add('h1.style4, h2.style4, h3.style4, p.style4', { style: 'fade-in', speed: 1000, intensity: 0, threshold: 3, delay: 0, replay: false });
 		onvisible.add('.buttons.style1', { style: 'fade-up', speed: 1000, intensity: 0, threshold: 3, delay: 0, replay: false });
-		onvisible.add('.image.style3', { style: 'zoom-out-image', speed: 1000, intensity: 5, threshold: 3, delay: 0, replay: false });
-		onvisible.add('.image.style1', { style: 'zoom-in', speed: 1000, intensity: 5, threshold: 3, delay: 0, replay: false });
 		onvisible.add('h1.style2, h2.style2, h3.style2, p.style2', { style: 'fade-left', speed: 1000, intensity: 0, threshold: 3, delay: 0, replay: false });
-		onvisible.add('.icons.style1', { style: 'fade-up', speed: 1000, intensity: 0, threshold: 3, delay: 0, replay: false });
+		onvisible.add('h1.style4, h2.style4, h3.style4, p.style4', { style: 'fade-in', speed: 1000, intensity: 0, threshold: 3, delay: 0, replay: false });
 
 })();

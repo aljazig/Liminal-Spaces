@@ -31,11 +31,11 @@ export class Trigger{
     }
 
     monsterKillFunction() {
-        window.location = "./index.html/#dead";
+        window.location = "./../../#dead";
     }
 
     executeFunction() {
-        window.location = "./index.html/#win";
+        window.location = "./../../#win";
     }
 
     executeFunction(player, object){
