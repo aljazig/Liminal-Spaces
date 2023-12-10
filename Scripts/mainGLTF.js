@@ -333,7 +333,7 @@ function update(time, dt) {
     let cx = camera.getComponentOfType(Transform).translation[0];
     let cy = camera.getComponentOfType(Transform).translation[2];
 
-    let angleToTurn = Math.atan2((cy - my), (cx - mx)) - Math.PI
+    let angleToTurn = -Math.atan2((cy - my), (cx - mx));
     monster.getComponentOfType(Transform).rotation = quat.fromEuler(monster.getComponentOfType(Transform).rotation, 0, (180 / Math.PI) * angleToTurn, 0);
     physics.update(time, dt);
 }
