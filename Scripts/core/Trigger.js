@@ -1,7 +1,7 @@
 import { vec3, vec4, mat3, quat } from '../gl-matrix-module.js';
 import { Transform } from './Transform.js';
 import { FirstPersonController } from '../FirstPersonController.js';
-import { LinearAnimator } from '../LinearAnimator.js';
+import { LinearMover } from '../LinearMover.js';
 import { Camera } from './Camera.js';
 
 export class Trigger{
@@ -24,10 +24,26 @@ export class Trigger{
         controller.maxSpeedBase *= 1.1;
         controller.maxSpeedRun = controller.maxSpeedBase + 5;
         donut.parent.removeChild(donut);
+
+        // Donut Audio
+        var audio = document.getElementById('blingAud');
+        audio.play().catch(function(error) {
+            console.log("Bling Auto-play was prevented: " + error);
+        });
     }
 
     monsterAttackFunction() {
-        this.monster.getComponentOfType(LinearAnimator).play();
+        this.monster.getComponentOfType(LinearMover).play();
+
+         // Monster audio
+         var audio = document.getElementById('triggerAud');
+         audio.play().catch(function(error) {
+             console.log("Trigger Auto-play was prevented: " + error);
+         });
+         var audio = document.getElementById('monsterAud');
+         audio.play().catch(function(error) {
+             console.log("Monster Auto-play was prevented: " + error);
+         });
     }
 
     monsterKillFunction() {

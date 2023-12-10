@@ -4,7 +4,7 @@ import { GLTFLoader } from './GLTFLoader.js';
 import { FirstPersonController } from './FirstPersonController.js';
 import { SpinAnimator } from './SpinAnimator.js';
 import { RotateAnimator } from './RotateAnimator.js';
-import { LinearAnimator } from './LinearAnimator.js';
+import { LinearMover } from './LinearMover.js';
 
 import { 
     Camera,
@@ -190,19 +190,18 @@ monster.addComponent(new Transform({
     translation: [18, 3, -29],
     scale: [0.2, 0.2, 0.2],
 }));
-monster.addComponent(new LinearAnimator(monster, {
+monster.addComponent(new LinearMover(monster, {
     startPosition: monster.getComponentOfType(Transform).translation,
     endPosition: camera.getComponentOfType(Transform).translation,
-    duration: 1000,
 }));
-monster.getComponentOfType(LinearAnimator).pause();
+monster.getComponentOfType(LinearMover).pause();
 monster.addComponent(new Trigger({
     functionality: "monsterKill",
 }));
 monster.isTrigger = true;
 monster.aabb = {
-    min: [-3, -1, -1],
-    max: [3, 1, 1],
+    min: [-4, -1, -1],
+    max: [4, 1, 1],
 }
 scene.addChild(monster);
 
@@ -220,19 +219,18 @@ monster2.addComponent(new Transform({
     translation: [-8, 3, -39],
     scale: [0.2, 0.2, 0.2],
 }));
-monster2.addComponent(new LinearAnimator(monster2, {
+monster2.addComponent(new LinearMover(monster2, {
     startPosition: monster2.getComponentOfType(Transform).translation,
     endPosition: camera.getComponentOfType(Transform).translation,
-    duration: 1000,
 }));
-monster2.getComponentOfType(LinearAnimator).pause();
+monster2.getComponentOfType(LinearMover).pause();
 monster2.addComponent(new Trigger({
     functionality: "monsterKill",
 }));
 monster2.isTrigger = true;
 monster2.aabb = {
-    min: [-3, -1, -1],
-    max: [3, 1, 1],
+    min: [-4, -1, -1],
+    max: [4, 1, 1],
 }
 scene.addChild(monster2);
 
@@ -386,12 +384,16 @@ function update(time, dt) {
     
     let mx = monster.getComponentOfType(Transform).translation[0];
     let my = monster.getComponentOfType(Transform).translation[2];
+    let m2x = monster2.getComponentOfType(Transform).translation[0];
+    let m2y = monster2.getComponentOfType(Transform).translation[2];
     let cx = camera.getComponentOfType(Transform).translation[0];
     let cy = camera.getComponentOfType(Transform).translation[2];
 
+    let angleToTurn = (180 / Math.PI) * (-Math.atan2((cy - my), (cx - mx)));
+    let angleToTurn2 = (180 / Math.PI) * (-Math.atan2((cy - m2y), (cx - m2x)));
 
-    let angleToTurn = -Math.atan2((cy - my), (cx - mx));
-    monster.getComponentOfType(Transform).rotation = quat.fromEuler(monster.getComponentOfType(Transform).rotation, 0, (180 / Math.PI) * angleToTurn, 0);
+    monster.getComponentOfType(Transform).rotation = quat.fromEuler(monster.getComponentOfType(Transform).rotation, 0, angleToTurn, 0);
+    monster2.getComponentOfType(Transform).rotation = quat.fromEuler(monster2.getComponentOfType(Transform).rotation, 0, angleToTurn2, 0);
     physics.update(time, dt);
 }
 

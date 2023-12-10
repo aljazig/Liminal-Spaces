@@ -11,5 +11,20 @@
     <div class="fullscreen">
         <canvas width="512" height="512"></canvas> 
     </div> 
+    <audio id="myAudio" src="creepy.mp3" loop></audio>
+    <audio id="monsterAud" src="monster.wav" loop></audio>
+    <audio id="triggerAud" src="Trigger.mp3"></audio>
+    <audio id="blingAud" src="bling.wav" ></audio>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                var audio = document.getElementById('myAudio');
+                audio.play().catch(function(error) {
+                    console.log("Auto-play was prevented: " + error);
+                });
+            }, 3000); // 3000 milliseconds
+        });
+    </script>
 </body>
 </html>

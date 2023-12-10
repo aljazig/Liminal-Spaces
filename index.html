@@ -18,33 +18,35 @@
 		<link href="https://fonts.googleapis.com/css2?display=swap&family=Inter:ital,wght@0,400;0,700;1,400;1,700&family=Poppins:ital,wght@0,700;1,700" rel="stylesheet" type="text/css" />
 		<link rel="stylesheet" href="assets/main.css" />
 		<noscript><link rel="stylesheet" href="assets/noscript.css" /></noscript>
+
 	</head>
 	<body class="is-loading">
 		<div id="wrapper">
 			<div id="main">
 				<div class="inner">
-					<header id="header">
-						<ul id="buttons01" class="style1 buttons">
-							<li>
-								<a href="#" class="button n01"><svg><use xlink:href="assets/icons.svg#home"></use></svg><span class="label">Home</span></a>
-							</li><li>
-								<a href="#won" class="button n02"><svg><use xlink:href="assets/icons.svg#check"></use></svg><span class="label">Won</span></a>
-							</li><li>
-								<a href="#dead" class="button n03"><svg><use xlink:href="assets/icons.svg#cancel"></use></svg><span class="label">Dead</span></a>
-							</li>
-						</ul>
-					</header>
 					<section id="home-section">
 						<div id="container01" class="style3 container default">
 							<div class="wrapper">
 								<div class="inner" data-onvisible-trigger="1">
 									<h1 id="text06" class="style2">Liminal Spaces</h1>
-									<p id="text16" class="style4">A fun WebGpu game as envisioned by students of FRI &amp; NTF.</p>
+									<p id="text16" class="style4">A fun WebGpu game as envisioned by students of FRI &amp; NTF. Click anywhere to start audio experience.</p>
 									<ul id="buttons02" class="style1 buttons">
 										<li>
 											<a href="./game.html" class="button n01"><svg><use xlink:href="assets/icons.svg#arrow-right-alt-light"></use></svg><span class="label">Play</span></a>
 										</li>
 									</ul>
+									<audio id="menuSong" src="menu.mp3" loop></audio>
+									<script>
+										document.addEventListener('DOMContentLoaded', function() {
+											document.addEventListener('click', function playAudioOnce() {
+												var audio = document.getElementById('menuSong');
+												audio.play().catch(function(error) {
+													console.log("Auto-play was prevented: " + error);
+												});
+												document.removeEventListener('click', playAudioOnce);
+											});
+										});
+									</script>
 								</div>
 							</div>
 						</div>
@@ -55,6 +57,11 @@
 								<div class="inner" data-onvisible-trigger="1">
 									<h1 id="text07" class="style2">Game Over</h1>
 									<p id="text08" class="style4">You lost. Now go cry.</p>
+									<ul id="buttons02" class="style1 buttons">
+										<li>
+											<a href="./game.html" class="button n01"><svg><use xlink:href="assets/icons.svg#arrow-right-alt-light"></use></svg><span class="label">Play Again</span></a>
+										</li>
+									</ul>
 								</div>
 							</div>
 						</div>
@@ -65,6 +72,11 @@
 								<div class="inner" data-onvisible-trigger="1">
 									<h1 id="text01" class="style2">You Won!</h1>
 									<p id="text04" class="style4">The prize for your hard work is... well... nothing.</p>
+									<ul id="buttons02" class="style1 buttons">
+										<li>
+											<a href="./game.html" class="button n01"><svg><use xlink:href="assets/icons.svg#arrow-right-alt-light"></use></svg><span class="label">Play Again</span></a>
+										</li>
+									</ul>
 								</div>
 							</div>
 						</div>
