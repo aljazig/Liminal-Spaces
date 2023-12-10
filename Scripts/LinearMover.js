@@ -35,7 +35,7 @@ export class LinearMover {
         //const linearInterpolation = (t - this.startTime) / this.duration;
         //const clampedInterpolation = Math.min(Math.max(linearInterpolation, 0), 1);
         //const loopedInterpolation = ((linearInterpolation % 1) + 1) % 1;
-        const maxSpeed = 14;
+        const maxSpeed = 13;
         const directionV = vec3.sub([0, 0, 0], this.endPosition, this.startPosition);
 
         this.updateNode(maxSpeed, directionV, dt);
