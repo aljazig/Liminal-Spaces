@@ -4,6 +4,7 @@ import { GLTFLoader } from './GLTFLoader.js';
 import { OBJLoader } from './OBJLoader.js';
 import { FirstPersonController } from './FirstPersonController.js';
 import { RotateAnimator } from './RotateAnimator.js';
+import { LinearAnimator } from './LinearAnimator.js';
 
 import { 
     Camera,
@@ -67,18 +68,30 @@ camera.aabb = {
 
 // Make a room:
 await loader.load("Models/soba/soba.gltf");
-const soba = loader.loadScene(loader.defaultScene);
+//const soba = loader.loadScene(loader.defaultScene);
+const soba = (() => {
+    const soba = new Node();
+    soba.addChild(loader.loadNode("Cube.001"));
+    soba.addChild(loader.loadNode("Cube.002"));
+    soba.addChild(loader.loadNode("Cube.003"));
+    soba.addChild(loader.loadNode("Cube.004"));
+    soba.addChild(loader.loadNode("Cube.005"));
+    soba.addChild(loader.loadNode("Sphere.001"));
+    soba.addChild(loader.loadNode("Sphere.002"));
+    soba.addChild(loader.loadNode("Sphere.003"));
+    soba.addChild(loader.loadNode("Sphere.004"));
+    return soba;
+})();
 soba.addComponent(new Transform({
     translation: [60, 1.42, -52],
     rotation: quat.fromEuler([0, 0, 0, 1], 0, -90, 0),
 }))
 scene.addChild(soba);
 
-// Make a donut:
-await loader.load("Models/donut/donut.gltf");
-const donutScene = loader.loadScene(loader.defaultScene);
-const donut = (() => {
-    let donut = new Node();
+// Make all the donuts:
+async function createDonut() {
+    await loader.load("Models/donut/donut_popravljen.gltf");
+    const donut = new Node();
     donut.addChild(loader.loadNode("donut"));
     donut.addChild(loader.loadNode("icing"));
     donut.addChild(loader.loadNode("sprinkle"));
@@ -86,25 +99,64 @@ const donut = (() => {
     donut.addChild(loader.loadNode("sprinkle.002"));
     donut.addChild(loader.loadNode("sprinkle.003"));
     donut.addChild(loader.loadNode("sprinkle.004"));
+    donut.addChild(loader.loadNode("sprinkle.005"));
+    donut.addChild(loader.loadNode("sprinkle.006"));
+    donut.addChild(loader.loadNode("sprinkle.007"));
+    donut.aabb = {
+        min: [-0.05, -0.1, -0.05],
+        max: [0.05, 2, 0.05],
+    };
+    donut.isTrigger = true;
+    donut.addComponent(new Trigger({
+        functionality: "donut",
+    }));
     return donut;
-})();
+}
+const donut = await createDonut();
 donut.addComponent(new Transform({
     translation: [3, 2, -2],
     scale: [4, 4, 4],
 }));
-donut.aabb = {
-    min: [-0.05, -0.1, -0.05],
-    max: [0.05, 2, 0.05],
-};
-donut.isTrigger = true;
-donut.addComponent(new Trigger({
-    functionality: "donut",
-}));
 scene.addChild(donut);
+const donut2 = await createDonut();
+donut2.addComponent(new Transform({
+    translation: [3, 2, -10],
+    scale: [4, 4, 4],
+}));
+scene.addChild(donut2);
+const donut3 = await createDonut();
+donut3.addComponent(new Transform({
+    translation: [18, 2, -21],
+    scale: [4, 4, 4],
+}));
+scene.addChild(donut3);
+const donut4 = await createDonut();
+donut4.addComponent(new Transform({
+    translation: [-17.5, 2, -2.5],
+    scale: [4, 4, 4],
+}));
+scene.addChild(donut4);
+const donut5 = await createDonut();
+donut5.addComponent(new Transform({
+    translation: [-2.5, 2, -35],
+    scale: [4, 4, 4],
+}));
+scene.addChild(donut5);
+const donut6 = await createDonut();
+donut6.addComponent(new Transform({
+    translation: [42, 2, 27.5],
+    scale: [4, 4, 4],
+}));
+scene.addChild(donut6);
+const donut7 = await createDonut();
+donut7.addComponent(new Transform({
+    translation: [54, 2, -8.5],
+    scale: [4, 4, 4],
+}));
+scene.addChild(donut7);
 
 // Make a monster:
 await loader.load("Models/posastGLTF/Posast1.gltf");
-const monsterScene = loader.loadScene(loader.defaultScene);
 const monster = (() => {
     let monster = new Node();
     monster.addChild(loader.loadNode("blago"));
@@ -114,9 +166,24 @@ const monster = (() => {
     return monster;
 })();
 monster.addComponent(new Transform({
-    translation: [3, 3, 5],
+    rotation: quat.fromEuler([0, 0, 0, 1], 0, -90, 0),
+    translation: [18, 3, -29],
     scale: [0.2, 0.2, 0.2],
 }));
+monster.addComponent(new LinearAnimator(monster, {
+    startPosition: [0, 0, 0],
+    endPosition: camera.getComponentOfType(Transform).translation,
+    duration: 0.5
+}));
+monster.getComponentOfType(LinearAnimator).pause();
+monster.addComponent(new Trigger({
+    functionality: "monsterKill",
+}));
+monster.isTrigger = true;
+monster.aabb = {
+    min: [-0.5, -1, -0.5],
+    max: [0.5, 1, 0.5],
+}
 scene.addChild(monster);
 
 // define imageBitmap for texture
@@ -203,6 +270,26 @@ trigger2.aabb = {
 };
 trigger2.isTrigger = true;
 scene.addChild(trigger2);
+
+const monsterTrigger = new Node();
+monsterTrigger.addComponent(new Transform({
+    translation: [18, 3, -17],
+}));
+monsterTrigger.addComponent(new Trigger({
+    functionality: "monsterAttack",
+    monster: monster,
+}));
+monsterTrigger.aabb = {
+    min: [-0.5, -1, -0.01],
+    max: [0.5, 1, 0.01],
+};
+monsterTrigger.isTrigger = true;
+scene.addChild(monsterTrigger);
+
+const exitTrigger = new Node();
+exitTrigger.addComponent(new Transform({
+    translation: [-21, 3, 2.5],
+}))
 
 // Enable physics (add a bounding box on every object):
 const physics = new Physics(scene);

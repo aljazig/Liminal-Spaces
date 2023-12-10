@@ -1,15 +1,18 @@
 import { vec3, vec4, mat3, quat } from '../gl-matrix-module.js';
 import { Transform } from './Transform.js';
 import { FirstPersonController } from '../FirstPersonController.js';
+import { LinearAnimator } from '../LinearAnimator.js';
 
 export class Trigger{
     constructor({
         functionality = "",
+        monster = null,
         rotation = [0, 0],
         translation = [0, 0, 0],
         scale = [0, 0, 0],
     } = {}){
         this.functionality = functionality;
+        this.monster = monster;
         this.rotation = rotation;
         this.translation = translation;
         this.scale = scale;
@@ -19,6 +22,15 @@ export class Trigger{
         const controller = player.getComponentOfType(FirstPersonController);
         controller.maxSpeed *= 1.1;
         donut.parent.removeChild(donut);
+    }
+
+    monsterAttackFunction() {
+        this.monster.getComponentOfType(LinearAnimator).play();
+    }
+
+    monsterKillFunction() {
+        //Death screen.
+        console.log("smrt");
     }
 
     executeFunction(player, object){
@@ -55,6 +67,12 @@ export class Trigger{
             }
             if (triggerFun[fun] == "donut") {
                 this.donutFunction(player, object);
+            }
+            if (triggerFun[fun] == "monsterAttack") {
+                this.monsterAttackFunction();
+            }
+            if (triggerFun[fun] == "monsterKill") {
+                this.monsterKillFunction();
             }
         }
     }

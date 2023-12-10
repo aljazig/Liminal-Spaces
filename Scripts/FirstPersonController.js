@@ -102,7 +102,7 @@ export class FirstPersonController {
 
         const transform = this.node.getComponentOfType(Transform);
         if (transform) {
-            //console.log(transform.translation);
+            console.log(transform.translation);
             // Update translation based on velocity.
             vec3.scaleAndAdd(transform.translation,
                 transform.translation, this.velocity, dt);
