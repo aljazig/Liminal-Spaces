@@ -10,6 +10,8 @@ export class FirstPersonController {
         velocity = [0, 0, 0],
         acceleration = 50,
         maxSpeed = 5,
+        maxSpeedBase = 5,
+        maxSpeedRun = 10,
         decay = 0.99999,
         pointerSensitivity = 0.002,
     } = {}) {
@@ -24,6 +26,9 @@ export class FirstPersonController {
         this.velocity = velocity;
         this.acceleration = acceleration;
         this.maxSpeed = maxSpeed;
+        this.maxSpeedBase = maxSpeedBase;
+        this.maxSpeedRun = maxSpeedRun;
+
         this.decay = decay;
         this.pointerSensitivity = pointerSensitivity;
 
@@ -73,7 +78,7 @@ export class FirstPersonController {
             vec3.sub(acc, acc, right);
         }
         if (this.keys['ShiftLeft']) {
-            this.maxSpeed = 10;
+            this.maxSpeed = this.maxSpeedRun;
             this.acceleration = 100;
         }
 
@@ -90,7 +95,7 @@ export class FirstPersonController {
             vec3.scale(this.velocity, this.velocity, decay);
         }
         if (!this.keys['ShiftLeft']) {
-            this.maxSpeed = 5;
+            this.maxSpeed = this.maxSpeedBase;
             this.acceleration = 50;
         }
 
@@ -102,7 +107,7 @@ export class FirstPersonController {
 
         const transform = this.node.getComponentOfType(Transform);
         if (transform) {
-            console.log(transform.translation);
+            //console.log(this.maxSpeed);
             // Update translation based on velocity.
             vec3.scaleAndAdd(transform.translation,
                 transform.translation, this.velocity, dt);

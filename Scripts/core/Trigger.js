@@ -20,7 +20,8 @@ export class Trigger{
 
     donutFunction(player, donut) {
         const controller = player.getComponentOfType(FirstPersonController);
-        controller.maxSpeed *= 1.1;
+        controller.maxSpeedBase *= 1.1;
+        controller.maxSpeedRun = controller.maxSpeedBase + 5;
         donut.parent.removeChild(donut);
     }
 

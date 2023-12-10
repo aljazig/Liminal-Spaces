@@ -62,11 +62,13 @@ struct LightUniforms {
 fn vertex(input : VertexInput) -> VertexOutput {
     var output : VertexOutput;
 
-    output.clipPosition = camera.projectionMatrix * camera.viewMatrix * model.modelMatrix * vec4(input.position, 1);
+    output.clipPosition = camera.projectionMatrix * camera.viewMatrix * (model.modelMatrix * vec4(input.position, 1));
     output.position = (model.modelMatrix * vec4(input.position, 1)).xyz;
     output.texcoords = input.texcoords;
-    output.normal = model.normalMatrix * input.normal;
-    output.tangent = model.normalMatrix * input.tangent;
+    let N = model.normalMatrix * input.normal;
+    let T = model.normalMatrix * input.tangent;
+    output.normal = N;
+    output.tangent = T;
 
     return output;
 }
@@ -77,16 +79,17 @@ fn fragment(input : FragmentInput) -> FragmentOutput {
 
     let baseColor = textureSample(baseTexture, baseSampler, input.texcoords);
     let normalColor = textureSample(normalTexture, normalSampler, input.texcoords).rgb;
-    let scaledNormal = normalize(normalColor * 2 - 1);// * vec3(vec2(material.normalFactor), 1));
+    let scaledNormal = normalize((normalColor * 2 - 1) * vec3(vec2(material.normalFactor), 1));
 
     let normal = normalize(input.normal);
     let tangent = normalize(input.tangent);
-    let bitangent = normalize(cross(normal, tangent));
-    let TBN = mat3x3(tangent, bitangent, normal);
-    
-    let N = TBN * scaledNormal;
+    let bitangent = normalize(cross(tangent, normal));
 
+    let TBN = mat3x3(tangent, bitangent, normal);
+
+    let N = TBN * scaledNormal;
     let L = normalize(light.position - input.position);
+
     let R = -reflect(L, N);
     let V = normalize(camera.position - input.position);
 

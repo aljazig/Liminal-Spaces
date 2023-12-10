@@ -224,9 +224,9 @@ export class Renderer extends BaseRenderer {
         const light = scene.find(node => node.getComponentOfType(Light));
         const lightComponent = light.getComponentOfType(Light);
         const lightMatrix = getGlobalModelMatrix(light);
-        const lightPoisition = mat4.getTranslation(vec3.create(), lightMatrix);
+        const lightPosition = mat4.getTranslation(vec3.create(), lightMatrix);
         const { lightUniformBuffer, lightBindGroup } = this.prepareLight(lightComponent);
-        this.device.queue.writeBuffer(lightUniformBuffer, 0, lightPoisition);
+        this.device.queue.writeBuffer(lightUniformBuffer, 0, lightPosition);
         this.device.queue.writeBuffer(lightUniformBuffer, 16, 
             new Float32Array([lightComponent.color]));
         this.device.queue.writeBuffer(lightUniformBuffer, 28, 

@@ -80,6 +80,9 @@ const soba = (() => {
     soba.addChild(loader.loadNode("Sphere.002"));
     soba.addChild(loader.loadNode("Sphere.003"));
     soba.addChild(loader.loadNode("Sphere.004"));
+    soba.addChild(loader.loadNode("box"));
+    soba.addChild(loader.loadNode("buttons"));
+    soba.addChild(loader.loadNode("screen"));
     return soba;
 })();
 soba.addComponent(new Transform({
