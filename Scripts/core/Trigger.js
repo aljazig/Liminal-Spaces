@@ -2,6 +2,7 @@ import { vec3, vec4, mat3, quat } from '../gl-matrix-module.js';
 import { Transform } from './Transform.js';
 import { FirstPersonController } from '../FirstPersonController.js';
 import { LinearAnimator } from '../LinearAnimator.js';
+import { Camera } from './Camera.js';
 
 export class Trigger{
     constructor({
@@ -30,8 +31,7 @@ export class Trigger{
     }
 
     monsterKillFunction() {
-        //Death screen.
-        console.log("smrt");
+        window.location = "./index.html/#dead";
     }
 
     executeFunction(player, object){
@@ -70,6 +70,7 @@ export class Trigger{
                 this.donutFunction(player, object);
             }
             if (triggerFun[fun] == "monsterAttack") {
+                console.log(player.getComponentOfType(Transform).translation);
                 this.monsterAttackFunction();
             }
             if (triggerFun[fun] == "monsterKill") {

@@ -1,7 +1,6 @@
 import { ResizeSystem } from './ResizeSystem.js';
 import { UpdateSystem } from './UpdateSystem.js';
 import { GLTFLoader } from './GLTFLoader.js';
-import { OBJLoader } from './OBJLoader.js';
 import { FirstPersonController } from './FirstPersonController.js';
 import { RotateAnimator } from './RotateAnimator.js';
 import { LinearAnimator } from './LinearAnimator.js';
@@ -105,6 +104,13 @@ async function createDonut() {
     donut.addChild(loader.loadNode("sprinkle.005"));
     donut.addChild(loader.loadNode("sprinkle.006"));
     donut.addChild(loader.loadNode("sprinkle.007"));
+    donut.addComponent(new RotateAnimator(donut, {
+        startRotation: quat.fromEuler(quat.create(), 0, 0, 0),
+        endRotation: quat.fromEuler(quat.create(), 0, 360, 0),
+        startTime: 0,
+        duration: 5,
+        loop: true, 
+    }));
     donut.aabb = {
         min: [-0.05, -0.1, -0.05],
         max: [0.05, 2, 0.05],
@@ -174,9 +180,9 @@ monster.addComponent(new Transform({
     scale: [0.2, 0.2, 0.2],
 }));
 monster.addComponent(new LinearAnimator(monster, {
-    startPosition: [0, 0, 0],
+    startPosition: monster.getComponentOfType(Transform).translation,
     endPosition: camera.getComponentOfType(Transform).translation,
-    duration: 0.5
+    duration: 1000,
 }));
 monster.getComponentOfType(LinearAnimator).pause();
 monster.addComponent(new Trigger({
@@ -184,8 +190,8 @@ monster.addComponent(new Trigger({
 }));
 monster.isTrigger = true;
 monster.aabb = {
-    min: [-0.5, -1, -0.5],
-    max: [0.5, 1, 0.5],
+    min: [-3, -1, -1],
+    max: [3, 1, 1],
 }
 scene.addChild(monster);
 
@@ -276,7 +282,7 @@ scene.addChild(trigger2);
 
 const monsterTrigger = new Node();
 monsterTrigger.addComponent(new Transform({
-    translation: [18, 3, -17],
+    translation: [18, 3, -21.5],
 }));
 monsterTrigger.addComponent(new Trigger({
     functionality: "monsterAttack",
