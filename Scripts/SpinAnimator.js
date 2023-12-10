@@ -2,7 +2,7 @@ import { Transform } from './core.js';
 
 import { quat } from './gl-matrix-module.js';
 
-export class RotateAnimator {
+export class SpinAnimator {
 
     constructor(node, {
         startRotation = [0, 0, 0, 1],
@@ -21,6 +21,7 @@ export class RotateAnimator {
         this.loop = loop;
 
         this.playing = true;
+        this.currentAngle = 0;
     }
 
     play() {
@@ -39,7 +40,13 @@ export class RotateAnimator {
         const linearInterpolation = (t - this.startTime) / this.duration;
         const clampedInterpolation = Math.min(Math.max(linearInterpolation, 0), 1);
         const loopedInterpolation = ((linearInterpolation % 1) + 1) % 1;
-        this.updateNode(this.loop ? loopedInterpolation : clampedInterpolation);
+        
+        let angle = 360 * loopedInterpolation;
+        this.endRotation = quat.fromEuler(quat.create(), 0, angle, 0);
+
+        this.currentAngle = (360 * ((t - this.startTime) / this.duration)) % 360;
+
+        this.updateNode();
     }
 
     updateNode(interpolation) {
@@ -48,8 +55,7 @@ export class RotateAnimator {
             return;
         }
 
-        console.log(this.endRotation);
-        quat.slerp(transform.rotation, this.startRotation, this.endRotation, interpolation);
+        quat.fromEuler(transform.rotation, 0, this.currentAngle, 0);
     }
 
 }

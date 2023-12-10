@@ -2,6 +2,7 @@ import { ResizeSystem } from './ResizeSystem.js';
 import { UpdateSystem } from './UpdateSystem.js';
 import { GLTFLoader } from './GLTFLoader.js';
 import { FirstPersonController } from './FirstPersonController.js';
+import { SpinAnimator } from './SpinAnimator.js';
 import { RotateAnimator } from './RotateAnimator.js';
 import { LinearAnimator } from './LinearAnimator.js';
 
@@ -23,7 +24,7 @@ import {
 
 import { Renderer } from './Renderer.js';
 import { Light } from './Light.js';
-import { quat, vec4 } from './gl-matrix-module.js';
+import { quat, vec3 } from './gl-matrix-module.js';
 import { Physics } from './Physics.js';
 
 // define canvas
@@ -44,7 +45,8 @@ const camera = (() => {
         const camera = new Node();
         camera.addComponent(new Transform({
             //translation: [-8, 3, 32],
-            translation: [3, 3, 0],
+            //translation: [3, 3, 0],
+            translation: [-17, 3, 2.5],
             rotation: quat.fromEuler([0, 0, 0, 1], 0, 30, 30),
         }));
         scene.addChild(camera);
@@ -104,7 +106,7 @@ async function createDonut() {
     donut.addChild(loader.loadNode("sprinkle.005"));
     donut.addChild(loader.loadNode("sprinkle.006"));
     donut.addChild(loader.loadNode("sprinkle.007"));
-    donut.addComponent(new RotateAnimator(donut, {
+    donut.addComponent(new SpinAnimator(donut, {
         startRotation: quat.fromEuler(quat.create(), 0, 0, 0),
         endRotation: quat.fromEuler(quat.create(), 0, 360, 0),
         startTime: 0,
@@ -175,7 +177,7 @@ const monster = (() => {
     return monster;
 })();
 monster.addComponent(new Transform({
-    rotation: quat.fromEuler([0, 0, 0, 1], 0, -90, 0),
+    rotation: quat.fromEuler([0, 0, 0, 1], 0, 180, 0),
     translation: [18, 3, -29],
     scale: [0.2, 0.2, 0.2],
 }));
@@ -297,15 +299,17 @@ scene.addChild(monsterTrigger);
 
 const exitTrigger = new Node();
 exitTrigger.addComponent(new Transform({
-    translation: [-21, 3, 2.5],
+    translation: [-19, 3, 2.5],
 }));
 exitTrigger.addComponent(new Trigger({
     functionality: "exit",
 }));
 exitTrigger.aabb = {
-    min: [-1, -1, -1],
-    max: [1, 1, 1],
+    min: [-0.1, -1, -2],
+    max: [0.1, 1, 2],
 };
+exitTrigger.isTrigger = true;
+scene.addChild(exitTrigger);
 
 // Enable physics (add a bounding box on every object):
 const physics = new Physics(scene);
@@ -325,7 +329,14 @@ function update(time, dt) {
             component.update?.(time, dt);
         }
     });
+    
+    let mx = monster.getComponentOfType(Transform).translation[0];
+    let my = monster.getComponentOfType(Transform).translation[2];
+    let cx = camera.getComponentOfType(Transform).translation[0];
+    let cy = camera.getComponentOfType(Transform).translation[2];
 
+    let angleToTurn = Math.atan2((cy - my), (cx - mx)) - Math.PI
+    monster.getComponentOfType(Transform).rotation = quat.fromEuler(monster.getComponentOfType(Transform).rotation, 0, (180 / Math.PI) * angleToTurn, 0);
     physics.update(time, dt);
 }
 

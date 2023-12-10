@@ -34,8 +34,8 @@ export class Trigger{
         window.location = "./../../#dead";
     }
 
-    executeFunction() {
-        window.location = "./../../#win";
+    exitFunction() {
+        window.location = "./../../#won";
     }
 
     executeFunction(player, object){
@@ -74,7 +74,6 @@ export class Trigger{
                 this.donutFunction(player, object);
             }
             if (triggerFun[fun] == "monsterAttack") {
-                console.log(player.getComponentOfType(Transform).translation);
                 this.monsterAttackFunction();
             }
             if (triggerFun[fun] == "monsterKill") {
